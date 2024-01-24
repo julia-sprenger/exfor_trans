@@ -18,7 +18,11 @@ jobs:
         uses: actions/checkout@v2
         with:
           token: ${{ secrets.GITHUB_TOKEN }}
-          fetch-depth: 0      
+          fetch-depth: 0
+          lfs: true
+
+      - name: Checkout LFS objects
+        run: git lfs pull
 
       - name: fetch latest files from password protected NDS Open Area
         env: 
@@ -35,6 +39,7 @@ jobs:
             bash ${GITHUB_WORKSPACE}/script/get_update_date.sh > entry_updatedate.dat
             git config user.name github-actions
             git config user.email github-actions@github.com
+            git lfs track "trans.*"
             git add trans*
             git commit -m "auto update trans files"
             git push origin main
