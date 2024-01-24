@@ -1,0 +1,43 @@
+name: Auto Update
+
+on:
+  workflow_dispatch
+  
+  #schedule:
+  #  - cron: '0 13 * * 1,3,5' # runs at 13:00 UTC every Mon., Wed., Fri.
+
+
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+
+      - name: checkout repo content
+        uses: actions/checkout@v2
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          fetch-depth: 0      
+
+
+      - uses: fregante/setup-git-user@v1
+
+      - name: fetch latest files from password protected NDS Open Area
+        env: 
+          OPENAREA_USER: ${{ secrets.OPENAREA_USER }}
+          OPENAREA_PWD: ${{ secrets.OPENAREA_PWD }}
+        run: |
+            wget -S -N --user $OPENAREA_USER --password $OPENAREA_PWD --user-agent="OECD" \
+            --no-directories --content-disposition --restrict-file-names=nocontrol -e robots=off \
+            -A "trans.*" --directory-prefix=trans_files --check-certificate=quiet -r www-nds.iaea.org/nrdc/ndsx4/trans/
+
+
+      - name: run entry update list file script and commit file
+        run: |
+            bash ${GITHUB_WORKSPACE}/script/get_update_date.sh > entry_updatedate.dat
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git add trans*
+            git commit -m "auto update trans files"
+            git push origin main
