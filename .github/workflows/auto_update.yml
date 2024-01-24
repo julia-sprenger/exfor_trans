@@ -31,7 +31,8 @@ jobs:
         run: |
             wget -nv -N --no-if-modified-since --no-use-server-timestamps --user $OPENAREA_USER --password $OPENAREA_PWD \
             --user-agent="OECD" --no-directories --content-disposition --restrict-file-names=nocontrol -e robots=off \
-            -A "trans.127*" --directory-prefix=trans_files --check-certificate=quiet -r www-nds.iaea.org/nrdc/ndsx4/trans/
+            -A "trans.127*" --directory-prefix=trans_files --check-certificate=quiet -r -l 0  --no-parent www-nds.iaea.org/nrdc/ndsx4/trans/
+
 
       - name: commit new files and changes
         run: |
