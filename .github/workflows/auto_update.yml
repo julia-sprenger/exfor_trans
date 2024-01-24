@@ -29,12 +29,11 @@ jobs:
           OPENAREA_USER: ${{ secrets.OPENAREA_USER }}
           OPENAREA_PWD: ${{ secrets.OPENAREA_PWD }}
         run: |
-            wget -S -N --user $OPENAREA_USER --password $OPENAREA_PWD --user-agent="OECD" \
-            --no-directories --content-disposition --restrict-file-names=nocontrol -e robots=off \
+            wget -nv -N --no-if-modified-since --no-use-server-timestamps --user $OPENAREA_USER --password $OPENAREA_PWD \
+            --user-agent="OECD" --no-directories --content-disposition --restrict-file-names=nocontrol -e robots=off \
             -A "trans.*" --directory-prefix=trans_files --check-certificate=quiet -r www-nds.iaea.org/nrdc/ndsx4/trans/
 
-
-      - name: run entry update list file script and commit file
+      - name: commit new files and changes
         run: |
             bash ${GITHUB_WORKSPACE}/script/get_update_date.sh > entry_updatedate.dat
             git config user.name github-actions
